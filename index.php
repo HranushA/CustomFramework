@@ -23,15 +23,10 @@ spl_autoload_register(function ($classname) {
     }
 });
 
-// Route::get('/', '/View/index.php');
-// Route::get('/about', '/View/about.php');
-// Route::get('/blog', '/View/blog.php');
 Route::get('/', 'UserController@index');
 Route::get('/about', 'UserController@aboutUser');
 
 Route::go($_SERVER['REQUEST_URI']);
-
-// new   UserController();
 
 ?>
 
