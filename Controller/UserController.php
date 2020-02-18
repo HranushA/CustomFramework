@@ -1,5 +1,8 @@
 <?php 
 class UserController{
+    public function login(){
+        echo "this is Login User";
+    }
     public function index(){
         echo "Main page";
     }

@@ -1,0 +1,50 @@
+body{
+    background-image: url("../image/galactic.jpg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    height: 100vh;
+}
+input{
+    background-color: #04040440;
+    color: #fff;
+    border: 0.5px solid #000;
+    border-radius: 7px;
+    padding: 0 5px;
+    outline: none;
+    width: calc(100% - 145px);
+    height: 32px;
+}   
+.form-box{
+    background-color: #ffffff91;
+    padding: 15px;
+    margin-top: 20vh;
+    box-shadow: 3px 2px 7px #1d2124;
+    border-radius: 7px;
+    height: 250px;
+}
+.form-row{
+    padding: 5px 0;
+}
+.form-row label{
+    width: 145px;
+}
+.button-row{
+    position: absolute;
+    bottom: 15px;
+    right: 25px;
+}
+.button-row button{
+    background-color: #1b1b38;
+    border-radius: 5px;
+    color: #fff;
+    border-color: #1b1b38;
+}
+.button-row button:disabled {
+    opacity: 0.5;
+    cursor: no-drop;
+}
+::placeholder { 
+    color: #fff;
+    opacity: 0.5;
+}
