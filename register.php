@@ -12,7 +12,8 @@ $conn = OpenCon();
     $num = mysqli_num_rows( $result );
 
     if( $num === 0 ){
-        $pass = md5($password);
+        $pass = password_hash($password, PASSWORD_DEFAULT);
+        
         if($name !== '' || $pass !== ''){
             $reg = "INSERT INTO users_table( Username, Password) value( '$name', '$pass')";
             mysqli_query( $conn, $reg );
