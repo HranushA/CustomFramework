@@ -48,3 +48,6 @@ input{
     color: #fff;
     opacity: 0.5;
 }
+.error-msg{
+    color: red;
+}

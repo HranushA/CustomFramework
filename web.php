@@ -2,8 +2,6 @@
 <html>  
 <body>
 <?php 
-
-// include 'route.php';
 spl_autoload_register(function ($classname) {
     $hot_key = "";
     switch (PHP_OS) {
@@ -25,7 +23,8 @@ spl_autoload_register(function ($classname) {
 });
 
 Route::get('/', 'UserController@index');
-Route::get('/login', 'UserController@login');
+Route::get('/dashboard', 'UserController@login');
+Route::get('/logout', 'UserController@logout');
 Route::get('/about', 'UserController@aboutUser');
 
 Route::go($_SERVER['REQUEST_URI']);
