@@ -4,6 +4,6 @@
     <?php include "View/header.php" ?>
 </head>
 <body>
-    <h4>This is About us page.</h4>
+    <h3>Wellcome <?php echo $_SESSION['User']; ?></h3>
 </body>
 </html>

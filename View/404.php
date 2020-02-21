@@ -1,8 +1,6 @@
 <!DOCTYPE HTML>
 <html>  
 <body>
-<?php 
-    echo "This is 404 page";
-?>
+    <h4>This page isn't found.</h4>
 </body>
 </html>

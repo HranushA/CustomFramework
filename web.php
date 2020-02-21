@@ -3,15 +3,10 @@
 <body>
 <?php 
 spl_autoload_register(function ($classname) {
-    $hot_key = "";
-    switch (PHP_OS) {
-    case "WINNT":
-        $hot_key = "/";
-        break;
-    default;
-        $hot_key = "/";
-        break;
-    }
+    $hot_key = "/";
+    if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+        $hot_key = "\\";
+    } 
 
     if(strpos($classname, "Controller") !== false){
         $filename = 'Controller' . $hot_key . $classname  .".php";
@@ -23,7 +18,7 @@ spl_autoload_register(function ($classname) {
 });
 
 Route::get('/', 'UserController@index');
-Route::get('/dashboard', 'UserController@login');
+Route::get('/login', 'UserController@login');
 Route::get('/logout', 'UserController@logout');
 Route::get('/about', 'UserController@aboutUser');
 
