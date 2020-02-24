@@ -23,7 +23,7 @@ if(!isset($_SESSION)) {
                                 <?php if(@$_GET['InvPass'] == true){ ?>
                                     <div class="error-msg"><?php echo $_GET['InvPass'] ?></div>                                
                                 <?php } ?>
-                                <form action="login" method="post">
+                                <form method="post" action="login">
                                     <div class="form-block"> 
                                         <div class="form-row">
                                             <label for="uname"><b>Username</b></label>
@@ -46,7 +46,7 @@ if(!isset($_SESSION)) {
                                 <?php if(@$_GET['InvUser'] == true){ ?>
                                     <div class="error-msg"><?php echo $_GET['InvUser'] ?></div>                                
                                 <?php } ?>
-                                <form method="post">
+                                <form method="post" action="<?php echo $_SERVER['PHP_SELF'];?>">
                                     <div class="form-block"> 
                                         <div class="form-row">
                                             <label for="uname"><b>Username</b></label>
@@ -60,6 +60,7 @@ if(!isset($_SESSION)) {
                                             <label for="uname"><b>Confirm Password</b></label>
                                             <input type="password" id="confirm_password" placeholder="Confirm Password" name="conf_psw" onchange="check_pass();">
                                         </div>
+                                        <div class="error-msg" id="confirm-pass-msg"></div>
                                         <div class="button-row">
                                             <button name="reg_submit" id="submit" type="submit">Register</button>
                                         </div>

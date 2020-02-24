@@ -20,12 +20,12 @@ spl_autoload_register(function ($classname) {
     }
 });
 
-// $_SESSION["login_status"] = 0; 
 
 Route::get('/', 'UserController@index');
-// Route::get('/login', 'UserController@login');
+Route::get('/login', 'UserController@showLogin');
 Route::get('/logout', 'UserController@logout');
 Route::get('/about', 'UserController@aboutUser');
+Route::get('/blog', 'UserController@blog');
 Route::post('/login', 'UserController@login');
 
 Route::go($_SERVER['REQUEST_URI']);

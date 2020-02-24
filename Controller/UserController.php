@@ -12,24 +12,25 @@ class UserController{
         if(isset($_SESSION['User'])) {
             include 'View/dashboard.php'; 
         } else{
-            header('location:login');
+            $url = $this->server_url();
+            header('location:' . $url);
         } 
     }
 
     public function login(){
-        if( $_SESSION["login_status"] == 0 ){
-            include 'loginReg.php'; 
-            if(isset($_POST["login_submit"])){
-                $name = $_POST["uname"];
-                $password = $_POST["psw"];
+        if( $_SESSION["login_status"] === 0){
+            if(isset($_REQUEST["login_submit"]) & $_SERVER['REQUEST_METHOD'] === "POST"){
+                $name = $_REQUEST["uname"];
+                $password = $_REQUEST["psw"];
                 $sth = DB::query("SELECT * FROM users_table WHERE Username = '$name'");
                 $result = $sth->fetch(PDO::FETCH_ASSOC);
                 $count = $sth->rowCount();
                 if( $count == 1 ){
                     if( password_verify( $password, $result["Password"] ) ){
                         $_SESSION["login_status"] = 1;
-                        $_SESSION['User'] = $_POST["uname"];
-                        header("location:login");
+                        $_SESSION['User'] = $_REQUEST["uname"];
+                        $url = $this->server_url();
+                        header('location:' . $url);
                     }else{
                         $_SESSION["login_status"] = 0;  
                         header("location:?InvPass=The password you entered is invalid.");
@@ -38,44 +39,59 @@ class UserController{
                     header("location:?InvPass=The username or password you entered is invalid.");
                 }
             }
-            if(isset($_POST["reg_submit"])){
-                $reg_name = $_POST["reg_name"];
-                $reg_pass = $_POST["reg_psw"];
+            if(isset($_REQUEST["reg_submit"]) & $_SERVER['REQUEST_METHOD'] === "POST"){
+                $reg_name = $_REQUEST["reg_name"];
+                $reg_pass = $_REQUEST["reg_psw"];
                 $sth = DB::query(" SELECT * FROM users_table WHERE Username = '$reg_name' ");
                 $reg_num = $sth->rowCount();
                 if( $reg_num === 0 ){
                     $hash_pass = password_hash($reg_pass, PASSWORD_DEFAULT);
                     if($reg_name !== '' || $reg_pass !== ''){
-                        DB::query(" INSERT INTO users_table( Username, Password) value( '$reg_name', '$hash_pass') ");
-                        header("location:login");
+                        DB::query(" INSERT INTO users_table( Username, Password ) value( '$reg_name', '$hash_pass') ");
                         $_SESSION["login_status"] = 1;
-                        $_SESSION['User'] = $_POST["reg_name"];
+                        $_SESSION['User'] = $_REQUEST["reg_name"];
+                        $url = $this->server_url();
+                        header('location:' . $url);
                     }     
                 }else{
                     $_SESSION["login_status"] = 0;
                     header("location:?InvUser=Username Already Taken.");
                 }
-            }
-                
+            }  
         }else{
-            $server_name = $_SERVER['SERVER_NAME'];
-            $protocol = strtolower(substr($_SERVER["SERVER_PROTOCOL"],0,5))=='https'?'https':'http';
-            $url = $protocol.'://'.$server_name."/";
+            $url = $this->server_url();
             header('location:' . $url);
         } 
+    }
+
+    public function showLogin(){
+        include 'loginReg.php';
+        // header('location:login'); 
     }
 
     public function logout(){
         $_SESSION["login_status"] = 0;  
         unset($_SESSION["User"]);
-        header('location:login');
+        $url = $this->server_url();
+        header('location:' . $url);
     }
 
     public function aboutUser(){
         include 'View/about.php'; 
     }
 
+    public function blog(){
+        include 'View/blog.php'; 
+    }
+
     public function __call( $funName, $arguments ){
         require __DIR__ . '/View/404.php';
+    }
+
+    public function server_url() {
+        $server_name = $_SERVER['SERVER_NAME'];
+        $protocol = strtolower( substr( $_SERVER["SERVER_PROTOCOL"], 0,5 ) ) == 'https'?'https':'http';
+        $url = $protocol . '://' . $server_name . "/";
+        return $url;
     }
 }
