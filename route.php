@@ -47,19 +47,21 @@ class Route {
   } 
 
   public static function go($url) {
-    var_dump( self::$route_list );
-    echo $_SESSION["login_status"];
     if($_SERVER['REQUEST_METHOD'] === "POST"){
       if (array_key_exists($url, self::$post_method)){
         $action = explode("@", self::$post_method[$url]);
       }  
     }
     if($_SERVER['REQUEST_METHOD'] === "GET"){
-      if( $_SESSION["login_status"] === 1 & $url !== "/login" ){
+      if( $_SESSION["login_status"] === 1 ){
+        if( $url !== "/login"){
           $action = ["Route", "not_found_page"];
           if (array_key_exists($url, self::$route_list)){
             $action = explode("@", self::$route_list[$url]);
           } 
+        }else{
+          $action = ["Route", "not_found_page"];
+        }
       }else{
         $action = ["UserController", "showLogin"];
       }

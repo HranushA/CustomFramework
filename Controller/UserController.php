@@ -9,12 +9,14 @@ spl_autoload_register(function ($classname) {
 class UserController{
 
     public function index(){
-        if(isset($_SESSION['User'])) {
+            $db = DB::table("users_table")->where("Username", "User1")->select();
+            $result = $db->fetch(PDO::FETCH_ASSOC);
+            var_dump( $result ) ;    
+
+            // $get = new DB;
+            // $get->get("aaa");
+            // var_dump($get);
             include 'View/dashboard.php'; 
-        } else{
-            $url = $this->server_url();
-            header('location:' . $url);
-        } 
     }
 
     public function login(){
@@ -60,20 +62,19 @@ class UserController{
             }  
         }else{
             $url = $this->server_url();
-            header('location:' . $url);
+            header( 'location:login' );
         } 
     }
 
     public function showLogin(){
         include 'loginReg.php';
-        // header('location:login'); 
     }
 
     public function logout(){
         $_SESSION["login_status"] = 0;  
         unset($_SESSION["User"]);
         $url = $this->server_url();
-        header('location:' . $url);
+        header( 'location:login' );
     }
 
     public function aboutUser(){

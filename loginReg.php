@@ -46,7 +46,7 @@ if(!isset($_SESSION)) {
                                 <?php if(@$_GET['InvUser'] == true){ ?>
                                     <div class="error-msg"><?php echo $_GET['InvUser'] ?></div>                                
                                 <?php } ?>
-                                <form method="post" action="<?php echo $_SERVER['PHP_SELF'];?>">
+                                <form method="post" action="login">
                                     <div class="form-block"> 
                                         <div class="form-row">
                                             <label for="uname"><b>Username</b></label>

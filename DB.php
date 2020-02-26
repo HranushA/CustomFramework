@@ -1,38 +1,66 @@
 <?php
-class DB
-{
-    protected static $instance = null;
+class DB{
+    protected static $instance;
     protected static $DB_CONNECTION = 'mysql';
     protected static $DB_HOST = 'localhost';
     protected static $DB_DATABASE = 'custom_mvc_db';
     protected static $DB_USERNAME = 'root';
     protected static $DB_PASSWORD = '1234';
-
-    public static function instance() {
-        if (self::$instance === null) {
-            $opt  = array(
-                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_CLASS,
-                PDO::ATTR_EMULATE_PREPARES   => FALSE,
-            );
-            $dsn = self::$DB_CONNECTION . ':host=' . self::$DB_HOST . ';dbname=' . self::$DB_DATABASE;
-            self::$instance = new PDO($dsn, self::$DB_USERNAME, self::$DB_PASSWORD, $opt);
+    protected static $table_name = '';
+    protected static $column_name = '';
+    protected static $args = '';
+    protected static $sql;
+        public function __construct(){
+            try { } catch (PDOException $e) {
+                die($e->getMessage());
+             }
         }
-        return self::$instance;
-    }
-
-    public static function __callStatic($method, $args) {
-        return call_user_func_array(array(self::instance(), $method), $args);
-    }
-
-    public static function query($sql, $args = []) {
-        $stmt = self::instance()->prepare($sql);
-        $stmt->execute($args);
-        return $stmt;
-    }
+        public static function instance() {
+            if (self::$instance === null) {
+                $opt  = array(
+                    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_CLASS,
+                    PDO::ATTR_EMULATE_PREPARES   => FALSE,
+                );
+                $dsn = self::$DB_CONNECTION . ':host=' . self::$DB_HOST . ';dbname=' . self::$DB_DATABASE;
+                self::$instance = new PDO($dsn, self::$DB_USERNAME, self::$DB_PASSWORD, $opt);
+            }
+            return self::$instance;
+        }
+        public static function __callStatic($method, $args) {
+            return call_user_func_array(array(self::instance(), $method), $args);
+        }
+        public function __call( $method, $args ) {
+            return call_user_func_array(array($this, $method), $args);
+        }
+        public static function query( $sql, $args = [] ) {
+            $stmt = self::instance()->prepare( $sql );
+            $stmt->execute( $args );
+            return $stmt;
+        }
+        public function get( $name ) {
+            echo $name;
+            // return $name;   
+        }
+        public static function table( $table_name ) {
+            self::$table_name = $table_name;
+            return new DB();    
+        }
+        public function where( $column_name, $args ) {
+            self::$column_name = $column_name;
+            self::$args = $args;
+            return new DB();
+            
+        }
+        public function select() {
+            self::$sql = "SELECT * FROM " . self::$table_name;
+            if( self::$column_name !== "" || self::$args !== "" ){
+                self::$sql .= " WHERE ". self::$column_name . "='" . self::$args . "'";
+            }
+            $stmt = self::instance()->prepare(self::$sql);
+            $stmt->execute();
+            return $stmt;
+        }
 }
- 
-
-
 
    
