@@ -15,13 +15,16 @@ class Route {
   }
 
   public static function get($route, $file) {
+    $new_route = $_SERVER['REQUEST_URI'] . "/";
+    if (strpos($_SERVER['REQUEST_URI'], '?') !== false) {
+      $index = strpos($_SERVER['REQUEST_URI'], '?');
+      $new_route = substr($_SERVER['REQUEST_URI'], 0, $index) . "/";
+    }
     if( $_SERVER['REQUEST_METHOD'] === "GET" ){
       if($route !== ""){
         self::$route_list[$route] = $file;
       } 
         if( !isset(self::$instance) ) {
-          $request = $_SERVER['REQUEST_URI'];
-          $new_route = $request . "/";
           if(preg_match($new_route, $route)){ 
             self::$instance = new Route();
           } 
@@ -31,13 +34,16 @@ class Route {
   }
 
   public static function post($route, $file) {
+    $new_route = $_SERVER['REQUEST_URI'] . "/";
+    if (strpos($_SERVER['REQUEST_URI'], '?') !== false) {
+      $index = strpos($_SERVER['REQUEST_URI'], '?');
+      $new_route = substr($_SERVER['REQUEST_URI'], 0, $index) . "/";
+    }
     if( $_SERVER['REQUEST_METHOD'] === "POST" ){
       if($route !== ""){
         self::$post_method[$route] = $file;
       } 
       if( !isset(self::$instance) ) { 
-        $request = $_SERVER['REQUEST_URI'];
-        $new_route = $request . "/";
         if(preg_match($new_route, $route)){
           self::$instance = new Route();
         } 
@@ -47,13 +53,14 @@ class Route {
   } 
 
   public static function go($url) {
+    
     if($_SERVER['REQUEST_METHOD'] === "POST"){
       if (array_key_exists($url, self::$post_method)){
         $action = explode("@", self::$post_method[$url]);
-      }  
+      } 
     }
     if($_SERVER['REQUEST_METHOD'] === "GET"){
-      if( $_SESSION["login_status"] === 1 ){
+      if( isset($_SESSION["login_status"]) & $_SESSION["login_status"] === 1 ){
         if( $url !== "/login"){
           $action = ["Route", "not_found_page"];
           if (array_key_exists($url, self::$route_list)){

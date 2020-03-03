@@ -20,6 +20,9 @@ spl_autoload_register(function ($classname) {
     }
 });
 
+if(!isset($_SESSION["login_status"])){
+    $_SESSION["login_status"] = 0;
+}
 
 Route::get('/', 'UserController@index');
 Route::get('/login', 'UserController@showLogin');
@@ -27,6 +30,11 @@ Route::get('/logout', 'UserController@logout');
 Route::get('/about', 'UserController@aboutUser');
 Route::get('/blog', 'UserController@blog');
 Route::post('/login', 'UserController@login');
+Route::post('/getTasks', 'UserController@getTasks');
+Route::post('/addTask', 'UserController@addTask');
+Route::post('/doingTask', 'UserController@doingTask');
+Route::post('/doneTask', 'UserController@doneTask');
+Route::post('/removeTask', 'UserController@removeTask');
 
 Route::go($_SERVER['REQUEST_URI']);
 

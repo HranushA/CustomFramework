@@ -6,16 +6,19 @@ spl_autoload_register(function ($classname) {
     $filename = $classname .".php";
     include_once($filename);   
 });
+
 class UserController{
 
-    public function index(){
-            $db = DB::table("users_table")->where("Username", "User1")->select();
-            $result = $db->fetch(PDO::FETCH_ASSOC);
-            var_dump( $result ) ;    
+    public function testPostman(){
+        var_dump($_POST);
+        echo $_POST["newTask"];
+        echo "<br/> aaaa";
+        $data = $_POST["newTask"];
+        $data = "aaaa";
+        return json_encode( $data, 200 );
+    }
 
-            // $get = new DB;
-            // $get->get("aaa");
-            // var_dump($get);
+    public function index(){
             include 'View/dashboard.php'; 
     }
 
@@ -24,7 +27,7 @@ class UserController{
             if(isset($_REQUEST["login_submit"]) & $_SERVER['REQUEST_METHOD'] === "POST"){
                 $name = $_REQUEST["uname"];
                 $password = $_REQUEST["psw"];
-                $sth = DB::query("SELECT * FROM users_table WHERE Username = '$name'");
+                $sth = DB::table("users_table")->where( "Username", $name)->get();
                 $result = $sth->fetch(PDO::FETCH_ASSOC);
                 $count = $sth->rowCount();
                 if( $count == 1 ){
@@ -44,12 +47,15 @@ class UserController{
             if(isset($_REQUEST["reg_submit"]) & $_SERVER['REQUEST_METHOD'] === "POST"){
                 $reg_name = $_REQUEST["reg_name"];
                 $reg_pass = $_REQUEST["reg_psw"];
-                $sth = DB::query(" SELECT * FROM users_table WHERE Username = '$reg_name' ");
+                $sth = DB::table("users_table")->where( "Username", $reg_name)->get();
                 $reg_num = $sth->rowCount();
                 if( $reg_num === 0 ){
                     $hash_pass = password_hash($reg_pass, PASSWORD_DEFAULT);
                     if($reg_name !== '' || $reg_pass !== ''){
-                        DB::query(" INSERT INTO users_table( Username, Password ) value( '$reg_name', '$hash_pass') ");
+                        $columns = [ "Username", "Password"];
+                        $values = [ $reg_name, $hash_pass];
+                        $db = DB::table("users_table")->insert( $columns, $values);
+                        $result = $db->fetch(PDO::FETCH_ASSOC);
                         $_SESSION["login_status"] = 1;
                         $_SESSION['User'] = $_REQUEST["reg_name"];
                         $url = $this->server_url();
@@ -95,4 +101,87 @@ class UserController{
         $url = $protocol . '://' . $server_name . "/";
         return $url;
     }
+
+    public function getTasks(){
+        ob_clean();
+        $sth = DB::table("tasks")->where( "Status", 'open')->get();
+        $openResult = $sth->fetchAll(PDO::FETCH_ASSOC);
+
+        $sth_1 = DB::table("tasks")->where( "Status", 'current')->get();
+        $carrentResult = $sth_1->fetchAll(PDO::FETCH_ASSOC);
+
+        $sth_2 = DB::table("tasks")->where( "Status", 'close')->get();
+        $closeResult = $sth_2->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode(
+            [
+                "openResult"=> $openResult,
+                "carrentResult"=> $carrentResult,
+                "closeResult"=> $closeResult,
+            ]
+        );
+        die;
+    }
+
+    public function addTask(){
+        ob_clean();
+        $data_request = json_decode(file_get_contents('php://input'), true);
+        $params = $data_request["params"];
+
+        $columns = ["Title", "Content", "Status"];
+        $values = [$params["Title"], $params["Content"], "open"];
+        $db = DB::table("tasks")->insert( $columns, $values);
+
+        echo json_encode(
+            [
+                "status"=> "ok"
+            ]
+        );  
+        die;
+    }
+
+    public function doingTask(){
+        ob_clean();
+        $data_request = json_decode(file_get_contents('php://input'), true);
+        $params = $data_request["params"];
+        $set = "Status='current'";
+        $where = "Id = " . $params["Id"];
+        $db = DB::table("tasks")->update( $set, $where );
+        echo json_encode(
+            [
+                "status"=> "ok",
+            ]
+        );  
+        die;
+    }
+    public function doneTask(){
+        ob_clean();
+        $data_request = json_decode(file_get_contents('php://input'), true);
+        $params = $data_request["params"];
+        $set = "Status='close'";
+        $where = "Id = " . $params["Id"];
+        $db = DB::table("tasks")->update( $set, $where );
+        echo json_encode(
+            [
+                "status"=> "ok"
+            ]
+        );  
+        die;
+    }
+
+    public function removeTask(){
+        ob_clean();
+        $data_request = json_decode(file_get_contents('php://input'), true);
+        $params = $data_request["params"];
+        $where = "Id = " . $params["Id"];
+        $db = DB::table("tasks")->delete( $where );
+        echo json_encode(
+            [
+                "status"=> "ok"
+            ]
+        );  
+        die;
+    }
 }
+
+?>
