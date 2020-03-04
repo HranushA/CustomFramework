@@ -9,15 +9,6 @@ spl_autoload_register(function ($classname) {
 
 class UserController{
 
-    public function testPostman(){
-        var_dump($_POST);
-        echo $_POST["newTask"];
-        echo "<br/> aaaa";
-        $data = $_POST["newTask"];
-        $data = "aaaa";
-        return json_encode( $data, 200 );
-    }
-
     public function index(){
             include 'View/dashboard.php'; 
     }
@@ -104,13 +95,27 @@ class UserController{
 
     public function getTasks(){
         ob_clean();
-        $sth = DB::table("tasks")->where( "Status", 'open')->get();
+        $task_status = Task::get_status();
+        $set =  "Status='".$task_status["to_do_status"]."'"; 
+        $where = "Status='open'"; 
+        $db = DB::table("tasks")->update( $set, $where );
+        $set =  "Status='".$task_status["doing_status"]."'"; 
+        $where = "Status='current'"; 
+        $db = DB::table("tasks")->update( $set, $where );
+        $set =  "Status='".$task_status["done_status"]."'"; 
+        $where = "Status='close'"; 
+        $db = DB::table("tasks")->update( $set, $where );
+
+        $sth = DB::table("tasks")->where( "Status", "open")->get();
+        $open = $sth->fetchAll(PDO::FETCH_ASSOC);
+
+        $sth = DB::table("tasks")->where( "Status", $task_status["to_do_status"])->get();
         $openResult = $sth->fetchAll(PDO::FETCH_ASSOC);
 
-        $sth_1 = DB::table("tasks")->where( "Status", 'current')->get();
+        $sth_1 = DB::table("tasks")->where( "Status",  $task_status["doing_status"])->get();
         $carrentResult = $sth_1->fetchAll(PDO::FETCH_ASSOC);
 
-        $sth_2 = DB::table("tasks")->where( "Status", 'close')->get();
+        $sth_2 = DB::table("tasks")->where( "Status",  $task_status["done_status"])->get();
         $closeResult = $sth_2->fetchAll(PDO::FETCH_ASSOC);
 
         echo json_encode(
@@ -125,42 +130,14 @@ class UserController{
 
     public function addTask(){
         ob_clean();
+        $task_status = Task::get_status();
         $data_request = json_decode(file_get_contents('php://input'), true);
         $params = $data_request["params"];
 
         $columns = ["Title", "Content", "Status"];
-        $values = [$params["Title"], $params["Content"], "open"];
+        $values = [$params["Title"], $params["Content"], $task_status["to_do_status"]];
         $db = DB::table("tasks")->insert( $columns, $values);
 
-        echo json_encode(
-            [
-                "status"=> "ok"
-            ]
-        );  
-        die;
-    }
-
-    public function doingTask(){
-        ob_clean();
-        $data_request = json_decode(file_get_contents('php://input'), true);
-        $params = $data_request["params"];
-        $set = "Status='current'";
-        $where = "Id = " . $params["Id"];
-        $db = DB::table("tasks")->update( $set, $where );
-        echo json_encode(
-            [
-                "status"=> "ok",
-            ]
-        );  
-        die;
-    }
-    public function doneTask(){
-        ob_clean();
-        $data_request = json_decode(file_get_contents('php://input'), true);
-        $params = $data_request["params"];
-        $set = "Status='close'";
-        $where = "Id = " . $params["Id"];
-        $db = DB::table("tasks")->update( $set, $where );
         echo json_encode(
             [
                 "status"=> "ok"
@@ -178,6 +155,28 @@ class UserController{
         echo json_encode(
             [
                 "status"=> "ok"
+            ]
+        );  
+        die;
+    }
+
+    public function changeStatus(){
+        ob_clean();
+        $data_request = json_decode(file_get_contents('php://input'), true);
+        $params = $data_request["params"];
+        $task_status = Task::get_status();
+        $status = $task_status["to_do_status"];
+        if( $params["Status"] === "Doing" ){
+            $status = $task_status["doing_status"];
+        }elseif( $params["Status"] === "Done" ){
+            $status = $task_status["done_status"];
+        }
+        $set = "Status='" . $status . "'";
+        $where = "Id = " . $params["Id"];
+        $db = DB::table("tasks")->update( $set, $where );
+        echo json_encode(
+            [
+                "status"=> "ok",
             ]
         );  
         die;

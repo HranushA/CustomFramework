@@ -53,8 +53,7 @@ class DB{
             if(isset($columns)){
                 self::$selected_columns = $columns;
             }
-            echo self::$sql;
-            // return new DB;  
+            return new DB;  
         }
         public function get(){
             self::$sql = "SELECT" . self::$selected_columns . " FROM " . self::$table_name;
@@ -66,8 +65,6 @@ class DB{
             return $stmt;
         }
         public function insert( $columns, $values ){
-            // self::$sql = "INSERT INTO" . self::$DB_DATABASE . "(" . $columns . ") value( " . $values . ")" ;
-
             self::$sql = 'INSERT INTO ' . self::$table_name . ' (';
             foreach ($columns as $key => $column) {
                 self::$sql .=  $column;
@@ -90,7 +87,6 @@ class DB{
         }
 
         public function update( $set, $where ){
-            // self::$sql = "UPDATE Customers SET Status='close' WHERE Id=1";
             self::$sql = 'UPDATE ' . self::$table_name . ' SET ' . $set . ' WHERE ' . $where;
             $stmt = self::instance()->prepare(self::$sql);
             $stmt->execute();
@@ -98,7 +94,6 @@ class DB{
         }
 
         public function delete( $where ){
-            // DELETE FROM table_name WHERE condition;
             self::$sql = 'DELETE FROM ' . self::$table_name . ' WHERE ' . $where;
             $stmt = self::instance()->prepare(self::$sql);
             $stmt->execute();

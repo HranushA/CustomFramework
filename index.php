@@ -35,6 +35,7 @@ Route::post('/addTask', 'UserController@addTask');
 Route::post('/doingTask', 'UserController@doingTask');
 Route::post('/doneTask', 'UserController@doneTask');
 Route::post('/removeTask', 'UserController@removeTask');
+Route::post('/changeStatus', 'UserController@changeStatus');
 
 Route::go($_SERVER['REQUEST_URI']);
 
