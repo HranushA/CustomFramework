@@ -106,9 +106,6 @@ class UserController{
         $where = "Status='close'"; 
         $db = DB::table("tasks")->update( $set, $where );
 
-        $sth = DB::table("tasks")->where( "Status", "open")->get();
-        $open = $sth->fetchAll(PDO::FETCH_ASSOC);
-
         $sth = DB::table("tasks")->where( "Status", $task_status["to_do_status"])->get();
         $openResult = $sth->fetchAll(PDO::FETCH_ASSOC);
 
@@ -138,9 +135,14 @@ class UserController{
         $values = [$params["Title"], $params["Content"], $task_status["to_do_status"]];
         $db = DB::table("tasks")->insert( $columns, $values);
 
+        $task_status = Task::get_status();
+        $sth = DB::table("tasks")->where( "Status", $task_status["to_do_status"])->get();
+        $openResult = $sth->fetchAll(PDO::FETCH_ASSOC);
+
         echo json_encode(
             [
-                "status"=> "ok"
+                "status"=> "ok",          
+                "openResult"=>$openResult
             ]
         );  
         die;
@@ -152,6 +154,7 @@ class UserController{
         $params = $data_request["params"];
         $where = "Id = " . $params["Id"];
         $db = DB::table("tasks")->delete( $where );
+        
         echo json_encode(
             [
                 "status"=> "ok"
@@ -174,9 +177,10 @@ class UserController{
         $set = "Status='" . $status . "'";
         $where = "Id = " . $params["Id"];
         $db = DB::table("tasks")->update( $set, $where );
+
         echo json_encode(
             [
-                "status"=> "ok",
+                "status"=> "ok"
             ]
         );  
         die;
